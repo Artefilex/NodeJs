@@ -150,3 +150,76 @@ app.use("/static", express.static(path.join(__dirname, "public")));
 burdaki localde bulunan static dosyalarının projeye dahil edilmesini saglıyoruz yoksa calısmazlar networkde görüntülenmezler . en son olarak 3000 portunda calıstırıyoruz 
 
 
+
+
+
+
+------------------------
+
+
+
+# mySQL kullanımı 
+1.  mySQL üzerinden bir database oluşturduk create database ile 
+2. tablo eklemesi yaptık  duruma göre degerlerini ve verilerini ekledik basit birer sql cümlleri ile ama manuel girdik verilieri 
+
+```bash 
+INSERT INTO `blogapp`.`blok` (`baslik`, `description`, `image`, `mainpage`, `onay`) VALUES ('Sıfırdan İleri Seviye Modern Javascript Dersleri ES7+ ', 'Modern javascript dersleri ile (ES6 & ES7+) Nodejs, Angular, React ve VueJs için sağlam bir temel oluşturun.', '3.jpg', '1', '1')	
+```
+
+
+3. aplly ile ekledikten sonra vscode geldik 
+
+4. npm i mysql2 indirdik veri tabanıyla baglantı kuracak paketimiz 
+
+5. pateimizi cagırdık sql baglantı kuracak parametreleri congif.js içerisine attık 
+
+```bash 
+ const mysql = require("mysql2")
+ const config = require("./config") 
+
+```
+
+```bash 
+const config = {
+    db:{
+        host: "localhost",
+        user: "root",
+        password: "",
+        database:"blogapp"
+    },
+}
+
+module.exports = config
+
+```
+
+6. config.js içerisinde öncelikle host bilgisini kullanıcıyı passwordü ve kullanacagımız bilgileri dogru bir şekilde girdik 
+
+7. connection diye bir değişken oluşturum mysql üzerinde createConnection kullanarak database istek gönderdik 
+
+
+```bash 
+let connection = mysql.createConnection( config.db
+)
+
+```
+
+8. son olarak databaseden connection.query methodu ile kullanacagımız tabloyu  select * from tablename methoduyla cevirdik ve geriye bir callback döndük eger error varsa error gösterecek yoksa direkt sonuca erişim saglayabilecegiz  
+
+```bash 
+connection.connect((err)=>{
+    if(err){
+       return  console.log(err)
+    }
+    connection.query("select * from blok" , (err, result)=>{
+       console.log(result)
+    })
+  
+        console.log("mysql server baglantısı yapıldı ")
+    
+
+} )
+
+```
+
+en son sonuc bize bir array içerisinde obje olarak döndü 
