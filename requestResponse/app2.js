@@ -8,7 +8,7 @@ var server = http.createServer((request, response) => {
   response.statusCode = 200;
   response.statusMessage = "OK";
   response.write("<h1>ana sayfa </h1>")
-  response.write("<p>ürünler </p>")
+  response.write("<p>urunler </p>")
   response.end();
 });
 
