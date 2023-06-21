@@ -4,7 +4,7 @@ const app = express()
 
 // routing yaparken en özelden en genel routa gideriz 
 // mesela sırala / /blog /blog/5 degil tam tersi bir şekilde /blog/5 /blog / 
-// olacak sekilde ilerler yoksa ilk dönen response takılı kalır sürekli nasayfa gelir 
+// olacak sekilde ilerler yoksa ilk dönen response takılı kalır sürekli anasayfa gelir 
  
 
 app.use( "/blogs/:blogid/users/:username", (req ,res) =>{
