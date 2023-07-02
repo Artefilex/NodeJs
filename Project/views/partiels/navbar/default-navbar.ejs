@@ -1,0 +1,30 @@
+
+    <div class="logo">
+        <a id="logo-img"  href="/"> <img src="/image/whiteL.png"  id="logoimg"  alt=""></a>
+       </div>
+      
+      <div class="navbar-items">
+        <nav class="navbar-location">
+          <ul>
+            <% nav.forEach(element => { %> 
+                <li>
+                    <a class="navbar-tag" href="<%=element.url%>">
+                    <%= element.item %>
+                </a></li>
+             
+            <% }) %>
+          </ul>
+         </nav>
+       
+        <div class="user-button">
+          <button id="login"><span>Login</span></button>
+          <button id="join"> <span> Join </span> </button>
+      
+         <button id="mood"> <i  class="fa-solid fa-moon"></i> </button> 
+         </div>
+    
+      </div>
+     
+      <div class="menu" id="menu">
+        <i class="fa-solid fa-bars"></i>
+     </div>

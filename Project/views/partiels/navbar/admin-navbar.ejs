@@ -1,0 +1,28 @@
+<% if (isAdmin) { %>
+  <div class="logo">
+    <a id="logo-img"  href="/"> <img src="/image/whiteL.png"  id="logoimg"  alt=""></a>
+   </div>
+   <div class="navbar-items">
+
+    <nav class="navbar-location">
+      <ul class="navbar-items admin-nav">
+        <li>
+          <a href="/admin/dashboard" class="navbar-tag">Dashboard</a>
+        </li>
+      
+        <li>
+          <a href="/admin/create" class="navbar-tag">New Blog</a>
+        </li>
+        <!-- <li>
+          <a href="/admin/settings" class="navbar-tag">Settings</a>
+        </li> -->
+        <li>
+          <a href="/admin/logout" class="navbar-tag">Logout</a>
+        </li>
+      </ul>
+    </nav>
+   </div> 
+    <div class="menu" id="menu">
+      <i class="fa-solid fa-bars"></i>
+   </div>
+  <% } %>

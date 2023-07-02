@@ -1,0 +1,29 @@
+<div class="about-info">
+  <% about.forEach(item => { %>
+    <% if (item.idabout %2 === 0  ) { %>
+        <div class="left">
+         <div class="content">
+            <h3><%=item.title%></h3>
+            <span> <%=item.content%></span>
+         </div>
+         <img src="/image/<%=item.image%>" alt="">
+        </div> 
+        
+    
+  <% } else { %>
+    <div class="right">
+
+        <img src="/image/<%=item.image%>" alt="">
+     <div class="content">
+          <h3><%=item.title%></h3>
+          <span> <%=item.content%></span>
+        </div>
+
+    </div>
+    <% } %>
+        
+        
+     
+  <% }) %>
+
+</div>

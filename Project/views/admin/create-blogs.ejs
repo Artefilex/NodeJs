@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User İnterface</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <%- include('../partiels/navbar/nav.ejs',{nav }) %>
+
+    <div class="container-admin">
+      <div class="create-form">
+        <form method="POST" id="create" enctype="multipart/form-data">
+          <div class="form-group">
+            <h6>Title:</h6>
+            <input type="text" name="createTitle" id="create-title" required />
+          </div>
+          <div class="form-group">
+            <h6>Description:</h6>
+            <textarea
+              name="createDesc"
+              id="create-desc"
+              cols="30"
+              rows="10"
+            ></textarea>
+          </div>
+          <div class="form-group-checkbox">
+            <div class="form-group">
+              <h6>Main:</h6>
+              <input
+                type="checkbox"
+                class="custom-checkbox"
+                name="createMain"
+                id="create-main"
+              />
+            </div>
+            <div class="form-group">
+              <h6>Blog:</h6>
+              <input
+                type="checkbox"
+                class="custom-checkbox"
+                name="createBlog"
+                id="create-main"
+                required
+                checked
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <h6>Image:</h6>
+            <input type="file" name="createImg" id="create-img" required />
+          </div>
+
+          <div>
+            <button id="createSubmit" type="submit">Create</button>
+          </div>
+        </form>
+      </div>
+      <div class="blogs">
+        <% blogs.forEach(blog => { %>
+        <div class="blog-item">
+          <a href="/blogs/<%=blog.blogid%>">
+            <img src="/image/<%=blog.image %>" alt="<%= blog.image %>" />
+            <h4><%=blog.title%></h4>
+          </a>
+          <button
+            id="delete-<%=blog.blogid%>"
+            class="delete-button"
+            data-blogid="<%=blog.blogid%>"
+          >
+            <i class="fa-solid fa-close"></i>
+          </button>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+
+    <%- include('../partiels/footer.ejs' ,{nav , contact}) %>
+    <script src="../partiels/index.js"></script>
+    <script src="./admin.js"></script>
+  </body>
+</html>

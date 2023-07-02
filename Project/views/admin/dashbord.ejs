@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User İnterface</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <%- include('../partiels/navbar/nav.ejs',{nav }) %>
+
+    <div class="dashbord-container">
+      <div class="dashbord">
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              
+              <th>Mail</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach(function(user) { %>
+            <tr>
+              <td><%= user.idnew_table %></td>
+             
+              <td><%= user.mail %></td>
+              <td><%= user.first_name %></td>
+              <td><%= user.last_name %></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      <div class="blogs-area">
+        <div class="blogs">
+          <div class="circle">
+            <h3><%= blogs.length %></h3>
+            <i class="fa-solid fa-circle-notch"></i>
+          </div>
+          <h5>Blogs</h5>
+        </div>
+        <div class="blogs">
+          <div class="circle">           
+            <h3><%= users.length %></h3>
+            <i class="fa-solid fa-circle-notch"></i>
+          </div>
+          <h5>Users</h5>
+        </div>
+      </div>
+    </div>
+
+    <%- include('../partiels/footer.ejs' ,{nav , contact}) %>
+    <script src="../partiels/index.js"></script>
+  </body>
+</html>

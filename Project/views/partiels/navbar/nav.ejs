@@ -1,0 +1,9 @@
+<div class="navbar" id="navbar">
+  <% if (isAdmin) { %> 
+    <%- include('./admin-navbar.ejs') %>
+  <% } else if (isUser) { %>
+    <%- include('./user-navbar.ejs', {nav: nav}) %> 
+  <% } else { %>
+    <%- include('./default-navbar.ejs', {nav: nav}) %>
+  <% } %>
+</div>

@@ -1,0 +1,26 @@
+<main id="main">
+  
+  <div class="container">
+    <% if (req.originalUrl === '/' || req.originalUrl === "/about") { %>
+
+    <div class="main-header">
+      <div class="main-img">
+        <img src="image/main.jpg" alt="" />
+      </div>
+
+      <div class="main-title">
+        <h3>Speed Up</h3>
+        <span>Your Desıgn Process</span>
+      </div>
+    </div>
+    <% } %>
+
+    <div class="main-blogs">
+      <div class="main-blogs-container" id="main-blog">
+        <% if (req.originalUrl === '/' || req.originalUrl === "/blogs") { %> <%
+        blogs.forEach(blog => { %> <%- include('./blog.ejs',{blog} ) %> <% }) %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</main>
