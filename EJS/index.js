@@ -4,7 +4,7 @@ const app = express();
 
 
 app.set("view engine", "ejs");
-
+app.use(express.urlencoded({extended : false}));
 const path = require("path");
 const userRoutes2 = require("./routes/user2");
 const userRoutes = require("./routes/user");
