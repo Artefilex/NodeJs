@@ -1,6 +1,6 @@
 <div class="list-group">
-    <a href="" class="list-group-item list-group-item-action"> Tüm Kategoriler  </a>
+    <a href="/" class="list-group-item list-group-item-action"> Tüm Kategoriler  </a>
     <% categories.forEach(function(category) { %>
-        <a href="" class="list-group-item list-group-item-action"> <%= category.catname %>  </a>
+        <a  href="/blogs/category/<%= category.catid %> "  class="list-group-item list-group-item-action <%= selectedCategory == category.catid ? 'active': '' %> "> > <%= category.catname %>  </a>
     <% }) %> 
 </div>
