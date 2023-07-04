@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../data/sql");
-
-router.all("/admin/blogs/create", async function (req, res) {
+const imageUpload = require("../helpers/image-upload")
+const fs = require("fs")
+router.all("/admin/blogs/create", imageUpload.upload.single("image"), async function (req, res) {
   if (req.method === "GET") {
     try {
       const [categories] = await db.execute("select * from categories");
@@ -13,11 +14,11 @@ router.all("/admin/blogs/create", async function (req, res) {
     } catch (err) {
       console.log(err);
     }
-  } else if (req.method === "POST") {
+  } else if (req.method === "POST" ) {
     try {
       const header = req.body.header;
       const desc = req.body.desc;
-      const image = req.body.image;
+      const image = req.file.filename;
       const category = req.body.category;
       const main = req.body.main == "on" ? 1 : 0;
       const onay = req.body.onay == "on" ? 1 : 0;
@@ -65,7 +66,7 @@ if(req.method === "GET"){
 
 })
 
-router.all("/admin/blogs/:blogid", async function (req, res) {
+router.all("/admin/blogs/:blogid",  imageUpload.upload.single("image"), async function (req, res) {
   if (req.method === "GET") {
     try {
       const blogid = req.params.blogid;
@@ -91,7 +92,15 @@ router.all("/admin/blogs/:blogid", async function (req, res) {
       const blogid = req.body.blogid;
       const header = req.body.header;
       const desc = req.body.desc;
-      const image = req.body.image;
+      let image = req.body.image;
+      if(req.file){
+        image = req.file.filename;
+        fs.unlink("./public/images/" + req.body.image, err =>{
+          console.log(err)
+          // fs modülü kullanarak eski dosya yolunu sildik req.body.image gelen uzantı ile 
+        });
+      }
+     
       const category = req.body.category;
       const main = req.body.main == "on" ? 1 : 0;
       const onay = req.body.onay == "on" ? 1 : 0;
