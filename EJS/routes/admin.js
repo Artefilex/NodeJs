@@ -27,7 +27,7 @@ router.all("/admin/blogs/create", async function (req, res) {
       // console.log(values)
       await db.execute(insertQuery, values);
 
-      res.redirect("/admin/blogs");
+      res.redirect("/admin/blogs?action=create");
     } catch (err) {
       console.log(err);
     }
@@ -57,7 +57,7 @@ if(req.method === "GET"){
           const values = [ blogid];
           await db.execute(updateQuery, values);
          
-          res.redirect("/admin/blogs")
+          res.redirect("/admin/blogs?action=delete")
         } catch (err) {
           console.log(err);
         }
@@ -79,6 +79,7 @@ router.all("/admin/blogs/:blogid", async function (req, res) {
           title: "blogs edit",
           blog: blog,
           categories: categories,
+         
         });
       }
       res.redirect("admin/blogs");
@@ -98,7 +99,7 @@ router.all("/admin/blogs/:blogid", async function (req, res) {
       const values = [header, desc, image, main, onay, category, blogid];
 
       await db.execute(updateQuery, values);
-      res.redirect("/admin/blogs")
+      res.redirect("/admin/blogs?action=edit&blogid=" +blogid)
     } catch (err) {
       console.log(err);
     }
@@ -114,6 +115,8 @@ router.all("/admin/blogs", async function (req, res) {
       res.render("admin/blog-list", {
         title: "blog list",
         blogs: blogs,
+        action:req.query.action,
+        blogid: req.query.blogid
       });
     } catch (err) {
       console.log(err);
