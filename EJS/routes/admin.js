@@ -124,4 +124,117 @@ router.all("/admin/blogs", async function (req, res) {
   }
 });
 
+
+router.all("/admin/category/create", async function (req, res) {
+  if (req.method === "GET") {
+    try {
+     
+      res.render("admin/category-create", {
+        title: "add category",
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  } else if (req.method === "POST") {
+    try {
+      const header = req.body.catname;
+      const insertQuery = `INSERT INTO categories (catname) VALUES (?) `;
+      const values = [header];
+      await db.execute(insertQuery, values);
+      res.redirect("admin/category?action=create");
+    } catch (err) {
+      console.log(err);
+    }
+  }
+});
+
+router.all("/admin/category/delete/:catid", async (req, res)=>{
+  if(req.method === "GET"){
+   const catid = req.params.catid
+   try{
+    const [categories,] = await db.execute("select * from categories where catid =?", [catid])
+    const category = categories[0]
+    if(category){
+      res.render("admin/category-delete",{
+          title: "delete blog",
+          category:category
+    })
+    }
+   }
+   catch(err){
+  
+   }
+  }
+   else if (req.method === "POST") {
+          try {
+            const catid = req.body.catid
+            const updateQuery = `Delete  from categories  WHERE catid = ?`;
+            const values = [ catid];
+            await db.execute(updateQuery, values);
+           
+            res.redirect("/admin/category?action=delete")
+          } catch (err) {
+            console.log(err);
+          }
+        }
+  
+  })
+
+
+router.all("/admin/category/:catid", async function (req, res) {
+  if (req.method === "GET") {
+    try {
+      const catid= req.params.catid;
+      const [categories] = await db.execute("select * from categories where catid =?", [
+        catid,
+      ]);
+      const category = categories[0];
+      if (category) {
+        return res.render("admin/category-edit", {
+          title: "blogs edit",
+         category: category,
+        });
+      }
+      res.redirect("admin/category");
+    } catch (err) {
+      console.log(err);
+    }
+  } else if (req.method === "POST") {
+    try {
+      const catid = req.body.categoryid;
+      const header = req.body.categoryname;
+  
+      const updateQuery = `UPDATE categories SET catname = ?  WHERE catid = ?`;
+      const values = [header, catid];
+
+      await db.execute(updateQuery, values);
+      res.redirect("admin/category?action=edit&catid= " +catid)
+    } catch (err) {
+      console.log(err);
+    }
+  }
+});
+
+
+
+
+
+router.all("/admin/category", async function (req, res) {
+  if (req.method === "GET") {
+    try {
+      const [categories,] = await db.execute(
+        "select * from categories "
+      );
+      res.render("admin/category-list", {
+        title: "category list",
+        categories:categories,
+        action:req.query.action,
+        catid: req.query.catid
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+});
+
 module.exports = router;
