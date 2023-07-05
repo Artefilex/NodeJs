@@ -2,6 +2,11 @@
 <html lang="en">
   <head>
     <%- include("../partials/head") %>
+    <style>
+      .ck-editor__editable_inline{
+        height: 300px;
+      }
+    </style>
   </head>
   <body>
     <%- include("../partials/nav") %>
@@ -9,9 +14,14 @@
     <div class="container mt-3">
       <div class="row">
         <div class="col-md-12">
-          <form action="" class="mt-3" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="blogid" value="<%=blog.blogid%>">
-           <input type="hidden" name="image" value="<%=blog.image%>">
+          <form
+            action=""
+            class="mt-3"
+            method="post"
+            enctype="multipart/form-data"
+          >
+            <input type="hidden" name="blogid" value="<%=blog.blogid%>" />
+            <input type="hidden" name="image" value="<%=blog.image%>" />
             <div class="row mb-3">
               <label for="baslık" class="col-sm-2 col-form-label">Baslık</label>
               <div class="col-sm-8">
@@ -25,24 +35,33 @@
             </div>
             <div class="row mb-3">
               <label for="acıklama" class="col-sm-2 col-form-label"
-                >Açıklama</label>
+                >Açıklama</label
+              >
               <div class="col-sm-8">
-                <textarea name="desc" class="form-control" rows="10">
+                <textarea
+                  id="editor"
+                  name="desc"
+                  class="form-control"
+                  rows="10"
+                >
                    <%=blog.description %>
-                   </textarea>
+                   </textarea
+                >
               </div>
             </div>
             <div class="row mb-3">
               <label for="resim" class="col-sm-2 col-form-label">Resim</label>
               <div class="col-sm-8">
-
-                <img src="/static/images/<%=blog.image%>" alt="" width="200px">
+                <img
+                  src="/static/images/<%=blog.image%>"
+                  alt=""
+                  width="200px"
+                />
                 <input
                   type="file"
                   class="form-control"
                   name="image"
                   id="resim"
-             
                 />
               </div>
             </div>
@@ -94,5 +113,15 @@
         </div>
       </div>
     </div>
+    <script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>
+    <script>
+      ClassicEditor.create(document.querySelector("#editor"))
+        .then((editor) => {
+          console.log(editor);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    </script>
   </body>
 </html>
