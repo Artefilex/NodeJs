@@ -20,7 +20,7 @@
             method="post"
             enctype="multipart/form-data"
           >
-            <input type="hidden" name="blogid" value="<%=blog.blogid%>" />
+            <input type="hidden" name="blogid" value="<%=blog.id%>" />
             <input type="hidden" name="image" value="<%=blog.image%>" />
             <div class="row mb-3">
               <label for="baslık" class="col-sm-2 col-form-label">Baslık</label>
@@ -49,7 +49,7 @@
                   name="desc"
                   class="form-control"
                   rows="10"
-                ><%=blog.desc %></textarea>
+                ><%-blog.desc %></textarea>
               </div>
             </div>
             <div class="row mb-3">
@@ -78,7 +78,7 @@
 
                   <% categories.forEach(category=> { %> <% if (category.dataValues.categoryid ==
                   blog.categoryid) { %>
-                  <option value="<%= category.dataValues.categoryid %>" selected>
+                  <option value="<%= category.dataValues.id %>" selected>
                     <%= category.dataValues.name%>
                   </option>
                   <% } else { %>

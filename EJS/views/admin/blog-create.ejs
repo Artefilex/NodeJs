@@ -65,7 +65,7 @@
                 <select name="category" id="category" class="form-select">
                   <option value="-1" selected>Seçiniz</option>
                   <% categories.forEach(category=> { %>
-                  <option value="<%= category.dataValues.categoryid %>">
+                  <option value="<%= category.dataValues.id %>">
                     <%= category.dataValues.name%>
                   </option>
                   <% }) %>
