@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../data/sql");
+
 const Blog = require("../models/blog")
 
 const Category = require("../models/category")
