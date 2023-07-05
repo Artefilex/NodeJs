@@ -19,7 +19,7 @@
                     <%- include("../partials/blog-card", blog)  %> 
                 <% }) %>
 
-                <% if (blogs.filter(b => b.onay).length > 3) { %>
+                <% if (blogs.filter(b => b.confirmation).length > 3) { %>
                     <%- include("../partials/pagination")  %> 
                 <% } %>
              

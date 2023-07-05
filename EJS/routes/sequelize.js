@@ -3,30 +3,40 @@ const router = express.Router();
 const db = require("../data/sql");
 const imageUpload = require("../helpers/image-upload")
 const fs = require("fs")
+const Blog = require("../models/blog")
+
+const Category = require("../models/category")
+
 router.all("/admin/blogs/create", imageUpload.upload.single("image"), async function (req, res) {
   if (req.method === "GET") {
     try {
-      const [categories] = await db.execute("select * from categories");
+     const categories = await Category.findAll();
       res.render("admin/blog-create", {
         title: "aloha app",
-        categories: categories,
+         categories: categories,
       });
     } catch (err) {
       console.log(err);
     }
   } else if (req.method === "POST" ) {
     try {
-      const header = req.body.header;
+      const title = req.body.header;
+      const subtitle = req.body.subtitle
       const desc = req.body.desc;
       const image = req.file.filename;
       const category = req.body.category;
       const main = req.body.main == "on" ? 1 : 0;
       const onay = req.body.onay == "on" ? 1 : 0;
-      const insertQuery = `INSERT INTO blok (baslik ,description ,image ,mainpage ,onay ,categoryid) VALUES (?,?,?,?,?,?) `;
-      const values = [header, desc, image, main, onay, category];
-
-      // console.log(values)
-      await db.execute(insertQuery, values);
+   
+      await Blog.create({
+        title : title,
+        subtitle: subtitle,
+        desc: desc,
+        image: image,
+        main: main,
+        confirmation: onay,
+        categoryid:category
+      })
 
       res.redirect("/admin/blogs?action=create");
     } catch (err) {
@@ -70,15 +80,14 @@ router.all("/admin/blogs/:blogid",  imageUpload.upload.single("image"), async fu
   if (req.method === "GET") {
     try {
       const blogid = req.params.blogid;
-      const [blogs] = await db.execute("select * from blok where blogid =?", [
-        blogid,
-      ]);
-      const [categories] = await db.execute("select * from categories ");
-      const blog = blogs[0];
+      const blog = await Blog.findByPk(blogid)
+ 
+      const categories = await Category.findAll()
+      
       if (blog) {
         return res.render("admin/blog-edit", {
           title: "blogs edit",
-          blog: blog,
+          blog: blog.dataValues,
           categories: categories,
          
         });
@@ -118,9 +127,9 @@ router.all("/admin/blogs/:blogid",  imageUpload.upload.single("image"), async fu
 router.all("/admin/blogs", async function (req, res) {
   if (req.method === "GET") {
     try {
-      const [blogs] = await db.execute(
-        "select blogid, baslik, image from blok   "
-      );
+ 
+      const blogs =  await Blog.findAll({attributes: ["blogid","title", "image" ]})
+      console.log(blogs)
       res.render("admin/blog-list", {
         title: "blog list",
         blogs: blogs,
@@ -146,10 +155,10 @@ router.all("/admin/category/create", async function (req, res) {
     }
   } else if (req.method === "POST") {
     try {
-      const header = req.body.catname;
-      const insertQuery = `INSERT INTO categories (catname) VALUES (?) `;
-      const values = [header];
-      await db.execute(insertQuery, values);
+      const name = req.body.catname;
+     
+      await Category.create({name: name}
+        )
       res.redirect("admin/category?action=create");
     } catch (err) {
       console.log(err);
@@ -190,18 +199,21 @@ router.all("/admin/category/delete/:catid", async (req, res)=>{
   })
 
 
-router.all("/admin/category/:catid", async function (req, res) {
+router.all("/admin/category/:categoryid", async function (req, res) {
   if (req.method === "GET") {
     try {
-      const catid= req.params.catid;
-      const [categories] = await db.execute("select * from categories where catid =?", [
-        catid,
-      ]);
-      const category = categories[0];
+      const catid= req.params.categoryid;
+    //   const category = await Category.findAll({
+    //     where: {
+    //         categoryid: catid
+    //     }
+    //   })
+    const category = await Category.findByPk(catid)
+      
       if (category) {
         return res.render("admin/category-edit", {
-          title: "blogs edit",
-         category: category,
+          title: "category edit",
+         category: category.dataValues,
         });
       }
       res.redirect("admin/category");
@@ -227,9 +239,9 @@ router.all("/admin/category/:catid", async function (req, res) {
 router.all("/admin/category", async function (req, res) {
   if (req.method === "GET") {
     try {
-      const [categories,] = await db.execute(
-        "select * from categories "
-      );
+      const categories = await  Category.findAll()
+      console.log(categories)
+
       res.render("admin/category-list", {
         title: "category list",
         categories:categories,

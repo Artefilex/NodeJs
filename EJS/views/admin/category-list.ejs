@@ -34,10 +34,10 @@
                 <tbody>
                     <% categories.forEach(cat => { %>
                          <tr>
-                            <td><%= cat.catid %></td>
-                            <td><%= cat.catname %></td>
-                            <td><a class="btn btn-sm btn-primary" href="/admin/category/<%=cat.catid %>"> Edit </a></td>
-                            <td><a class="btn btn-sm btn-danger" href="/admin/category/delete/<%=cat.catid %>"> Delete </a></td>
+                            <td><%= cat.dataValues.categoryid %></td>
+                            <td><%= cat.dataValues.name %></td>
+                            <td><a class="btn btn-sm btn-primary" href="/admin/category/<%=cat.dataValues.categoryid %>"> Edit </a></td>
+                            <td><a class="btn btn-sm btn-danger" href="/admin/category/delete/<%=cat.dataValues.categoryid %>"> Delete </a></td>
                         </tr>
                         <% }) %>
                 </tbody>

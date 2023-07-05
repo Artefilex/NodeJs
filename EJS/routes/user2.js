@@ -1,15 +1,24 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../data/sql");
+const Blog = require("../models/blog")
 
-
+const Category = require("../models/category")
+const {Op} = require("sequelize")
 
 router.use("/blogs/category/:categoryid", async function(req, res) {
   const id = req.params.categoryid;
   try {
-      const [blogs, ] = await db.execute("select * from blok where categoryid=?", [id]); 
-      const [categories, ] = await db.execute("select * from categories");
-
+      const blogs = await Blog.findAll({
+        where:{
+          categoryid : id,
+          confirmation:true
+        },
+        
+        raw:true
+      })  
+      const categories = await Category.findAll()
+console.log(blogs)
       res.render("users/blogs", {
           title: "Tüm Kurslar",
           blogs: blogs,
@@ -27,11 +36,11 @@ router.use("/blogs/category/:categoryid", async function(req, res) {
 router.use("/blogs/:blogid", async function (req, res) {
   const id = req.params.blogid;
   try {
-    const [blogs,] = await db.execute("select * from blok where blogid=?", [id]);
-    if (blogs[0]) {
+    const blog = await Blog.findByPk(id)  
+    if (blog) {
       return res.render("users/blog-details", {
-        title: blogs[0].title,
-        blog: blogs[0],
+        title: blog.title,
+        blog: blog,
       });
     }
     res.redirect("/");
@@ -42,8 +51,14 @@ router.use("/blogs/:blogid", async function (req, res) {
 
 router.use("/blogs", async function (req, res) {
   try {
-    const [blogs] = await db.execute("select * from blok where onay = 1");
-    const [categories] = await db.execute("select * from categories");
+    const blogs = await Blog.findAll({
+      where:{
+        confirmation: true
+      },
+      raw: true
+    });
+    console.log(blogs)
+    const categories = await Category.findAll()
     res.render("users/blogs", {
       title: " blogs app",
       categories: categories,
@@ -57,10 +72,19 @@ router.use("/blogs", async function (req, res) {
 
 router.use("/", async function (req, res) {
   try {
-    const [blogs] = await db.query(
-      "select * from blok where onay = 1 and  mainpage = 1 "
-    );
-    const [categories] = await db.execute("select * from categories");
+    const blogs = await Blog.findAll({
+      where:{
+        [Op.and]: [{confirmation: true},{
+          main: true}]
+      },
+     
+      raw: true
+    }
+  
+    );  console.log(blogs)
+    const categories = await Category.findAll({
+      raw: true    
+    })
     res.render("users/blogs", {
       title: " blogs app",
       categories: categories,
