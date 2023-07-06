@@ -3,6 +3,7 @@ const Category = require("../models/category");
 const fs = require("fs");
 const { Op } = require("sequelize");
 const db = require("../data/sql");
+const slugfield = require("../helpers/slugfield");
 
 exports.blog_create = async function (req, res) {
   if (req.method === "GET") {
@@ -21,18 +22,18 @@ exports.blog_create = async function (req, res) {
       const subtitle = req.body.subtitle;
       const desc = req.body.desc;
       const image = req.file.filename;
-      const category = req.body.category;
+     
       const main = req.body.main == "on" ? 1 : 0;
       const onay = req.body.onay == "on" ? 1 : 0;
 
       await Blog.create({
         title: title,
+        url: slugfield(title),
         subtitle: subtitle,
         desc: desc,
         image: image,
         main: main,
-        confirmation: onay,
-        categoryId: category,
+        confirmation: onay 
       });
 
       res.redirect("/admin/blogs?action=create");
@@ -103,6 +104,7 @@ exports.blog_edit = async function (req, res) {
     const main = req.body.main == "on" ? 1 : 0;
     const onay = req.body.onay == "on" ? 1 : 0;
     const categorieIds = req.body.catagories;
+    const url = req.body.url;
     let image = req.body.image;
     if (req.file) {
       image = req.file.filename;
@@ -125,9 +127,11 @@ exports.blog_edit = async function (req, res) {
       if (blog) {
         blog.title = header;
         blog.subtitle = subtitle;
+        
         blog.desc = desc;
         blog.image = image;
         blog.main = main;
+        blog.url =slugfield( url);
         blog.confirmation = onay;
         console.log(categorieIds);
         if (categorieIds == undefined) {

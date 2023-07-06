@@ -1,19 +1,20 @@
 const Category = require("../models/category");
 const Blog = require("../models/blog");
-
+const slugField = require("../helpers/slugfield")
 async function populate() {
   const count = await Category.count();
 
   if (count == 0) {
    const categories = await Category.bulkCreate([
-      { name: "Web Geliştirme" },
-      { name: "Mobil Geliştirme" },
-      { name: "Programlama" },
+      { name: "Web Geliştirme" ,url: slugField("Web Geliştirme") },
+      { name: "Mobil Geliştirme",url: slugField("Mobil Geliştirme") },
+      { name: "Programlama",url: slugField("Programlama") },
     ]);
 
    const blogs =   await Blog.bulkCreate([
       {
         title: "Komple Uygulamalı Web Geliştirme Eğitimi",
+        url : slugField("Komple Uygulamalı Web Geliştirme Eğitimi"),
         subtitle:
           "Sıfırdan ileri seviyeye 'Web Geliştirme': Html, Css, Sass, Flexbox, Bootstrap, Javascript, Angular, JQuery, Asp.Net Mvc&Core Mvc",
         aciklama:
@@ -25,6 +26,7 @@ async function populate() {
       },
       {
         title: "Python ile Sıfırdan İleri Seviye Python Programlama",
+        url : slugField("Python ile Sıfırdan İleri Seviye Python Programlama"),
         subtitle:
           "Sıfırdan İleri Seviye Python Dersleri.Veritabanı,Veri Analizi,Bot Yazımı,Web Geliştirme(Django)",
         desc: "Python, son zamanların en popüler programlama dili haline geldi. Python' ın bu kadar popüler olmasındaki sebep şüphesiz öğrenmesi kolay bir yazılım dili olmasıdır.sadikturan adreslerinde paylaşmış olduğum python dersleri serisini takip ederek ister video ister yazılı kaynaklar yardımıyla kısa zamanda python programlama alanında uzmanlık kazanın ve hayal ettiğiniz projeyi gerçekleştirin.",
@@ -34,6 +36,7 @@ async function populate() {
       },
       {
         title: "Python ile Sıfırdan İleri Seviye Python Programlama",
+        url : slugField("Python ile Sıfırdan Programlama"),
         subtitle:
           "Sıfırdan İleri Seviye Python Dersleri.Veritabanı,Veri Analizi,Bot Yazımı,Web Geliştirme(Django)",
         desc: "Python, son zamanların en popüler programlama dili haline geldi. Python' ın bu kadar popüler olmasındaki sebep şüphesiz öğrenmesi kolay bir yazılım dili olmasıdır.sadikturan adreslerinde paylaşmış olduğum python dersleri serisini takip ederek ister video ister yazılı kaynaklar yardımıyla kısa zamanda python programlama alanında uzmanlık kazanın ve hayal ettiğiniz projeyi gerçekleştirin.",
@@ -43,6 +46,7 @@ async function populate() {
       },
       {
         title: "Python ile Sıfırdan İleri Seviye Python Programlama",
+        url : slugField("İleri Seviye Python Programlama"),
         subtitle:
           "Sıfırdan İleri Seviye Python Dersleri.Veritabanı,Veri Analizi,Bot Yazımı,Web Geliştirme(Django)",
         desc: "Python, son zamanların en popüler programlama dili haline geldi. Python' ın bu kadar popüler olmasındaki sebep şüphesiz öğrenmesi kolay bir yazılım dili olmasıdır.sadikturan adreslerinde paylaşmış olduğum python dersleri serisini takip ederek ister video ister yazılı kaynaklar yardımıyla kısa zamanda python programlama alanında uzmanlık kazanın ve hayal ettiğiniz projeyi gerçekleştirin.",
@@ -61,6 +65,7 @@ async function populate() {
     await blogs[0].addCategory(categories[1])
     await categories[0].createBlog({
       title: "Komple Uygulamalı Web Geliştirme Eğitimi",
+      url : slugField("Programlamalar içinde en güzeli "),
         subtitle:
           "Sıfırdan ileri seviyeye 'Web Geliştirme': Html, Css, Sass, Flexbox, Bootstrap, Javascript, Angular, JQuery, Asp.Net Mvc&Core Mvc",
         aciklama:
@@ -75,3 +80,4 @@ async function populate() {
 }
 
 module.exports = populate;
+

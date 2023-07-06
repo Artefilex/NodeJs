@@ -1,9 +1,13 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../data/sql");
-const Category = require("./category");
+
 
 const Blog = sequelize.define("blog", {
   title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  url: {
     type: DataTypes.STRING,
     allowNull: false,
   },
