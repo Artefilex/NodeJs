@@ -20,15 +20,20 @@ const Category = require("./models/category")
 const Blog = require("./models/blog")
 // ilişkiler
 
-Category.hasMany(Blog,{
-  foreignKey:{
-    name:"categoryId",
-    allowNull: false
-  },
-  onDelete: "RESTRICT",
-  onUpdate: "RESTRICT"
-})
-Blog.belongsTo(Category)
+Blog.belongsToMany(Category , {through: "blogCategories"})
+Category.belongsToMany(Blog , {through: "blogCategories"})
+
+
+
+// Category.hasMany(Blog,{
+//   foreignKey:{
+//     name:"categoryId",
+//     allowNull: false
+//   },
+//   onDelete: "RESTRICT",
+//   onUpdate: "RESTRICT"
+// })
+// Blog.belongsTo(Category)
 
 // bire çok ilişki kurdugumuz durumlarda eğer category içerisinden bir biligiyi silmek istiyorsak 
 // ve bu kategori bircok blogda varsa categornin silinmesi onDelete: "RESTRICT" onUpdate: "RESTRICT" vererek allowNull false yaparsak 
@@ -44,7 +49,7 @@ Blog.belongsTo(Category)
 
 //IIFE
 async function sync(){
-  await sequelizeDb.sync({alter: true})
+  await sequelizeDb.sync({force: true})
    await dummyData();
 } 
 sync()

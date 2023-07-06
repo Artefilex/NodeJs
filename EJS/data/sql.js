@@ -1,4 +1,3 @@
-const mysql = require("mysql2");
 const config = require("../config");
 // let connection = mysql.createConnection( config.db
 // )
@@ -21,6 +20,9 @@ const sequelize = new Sequelize(
   {
     dialect: "mysql",
     host: config.db.host,
+    define:{
+      timestamps: false
+    }
   }
 );
 async function connect() {
