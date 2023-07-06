@@ -73,7 +73,7 @@ exports.blog_edit = async function (req, res) {
     try {
       const blog = await Blog.findByPk(blogid);
       const categories = await Category.findAll();
-
+     
       if (blog) {
         return res.render("admin/blog-edit", {
           title: "blogs edit",
@@ -179,15 +179,21 @@ exports.category_delete = async (req, res) => {
 
 exports.category_edit = async function (req, res) {
   if (req.method === "GET") {
+    const catid = req.params.categoryid;
     try {
-      const catid = req.params.categoryid;
-
       const category = await Category.findByPk(catid);
-
+    //   const blogs = await Blog.findAll({
+    //     where:{
+    //         categoryId: catid
+    //     }
+    //   })
+    // getBlogs birecok iliskide kendisi kuruyor yukardaki koddan kurtuluyoruz
+    const blogs = await category.getBlogs()
       if (category) {
         return res.render("admin/category-edit", {
           title: "category edit",
           category: category.dataValues,
+          blogs:blogs,
           action: req.query.action,
           categoryid: req.query.categoryid
         });

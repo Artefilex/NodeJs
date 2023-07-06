@@ -20,8 +20,24 @@ const Category = require("./models/category")
 const Blog = require("./models/blog")
 // ilişkiler
 
-Category.hasMany(Blog)
+Category.hasMany(Blog,{
+  foreignKey:{
+    name:"categoryId",
+    allowNull: false
+  },
+  onDelete: "RESTRICT",
+  onUpdate: "RESTRICT"
+})
 Blog.belongsTo(Category)
+
+// bire çok ilişki kurdugumuz durumlarda eğer category içerisinden bir biligiyi silmek istiyorsak 
+// ve bu kategori bircok blogda varsa categornin silinmesi onDelete: "RESTRICT" onUpdate: "RESTRICT" vererek allowNull false yaparsak 
+//  asla kategorye baglı olan bloglar silinmeden o category silinmez
+
+// eger onDelete: "SET NULL", onUpdate: "SET NULL" yaparsak bu allowNull da true gönderirsek 
+//  bu kategorye baglı olan blogların categoryId leri null olarak set edilir 
+//  onDelete: "CASCADE", onUpdate: "CASCADE"  allowNull: false ise bir kategory silince 
+// ona baglı tüm blogları da siler 
 
 // console.log(dummyData())
 // uygulaması -sync
