@@ -2,12 +2,12 @@ const express = require("express");
 const router = express.Router();
 const userControler = require("../controlers/user");
 
-router.use("/blogs/category/:slug", userControler.blogs_by_category);
+router.get("/blogs/category/:slug", userControler.blogs_list);
 
-router.use("/blogs/:slug", userControler.blogs_details);
+router.get("/blogs/:slug", userControler.blogs_details);
 
-router.use("/blogs", userControler.blogs_list);
+router.get("/blogs", userControler.blogs_list);
 
-router.use("/", userControler.main);
+router.get("/", userControler.main);
 
 module.exports = router;

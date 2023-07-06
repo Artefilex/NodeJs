@@ -53,12 +53,47 @@ async function populate() {
         image: "2.jpeg",
         main: true,
         confirmation: true,
+      }, {
+        title: "Python ile Sıfırdan İleri Seviye Python Programlama",
+        url : slugField("Python ile Sıfırdan İleri Seviye Python Programlama"),
+        subtitle:
+          "Sıfırdan İleri Seviye Python Dersleri.Veritabanı,Veri Analizi,Bot Yazımı,Web Geliştirme(Django)",
+        desc: "Python, son zamanların en popüler programlama dili haline geldi. Python' ın bu kadar popüler olmasındaki sebep şüphesiz öğrenmesi kolay bir yazılım dili olmasıdır.sadikturan adreslerinde paylaşmış olduğum python dersleri serisini takip ederek ister video ister yazılı kaynaklar yardımıyla kısa zamanda python programlama alanında uzmanlık kazanın ve hayal ettiğiniz projeyi gerçekleştirin.",
+        image: "2.jpeg",
+        main: true,
+        confirmation: true,
+      },
+      {
+        title: "Python ile Sıfırdan İleri Seviye Python Programlama",
+        url : slugField("Python ile Sıfırdan Programlama"),
+        subtitle:
+          "Sıfırdan İleri Seviye Python Dersleri.Veritabanı,Veri Analizi,Bot Yazımı,Web Geliştirme(Django)",
+        desc: "Python, son zamanların en popüler programlama dili haline geldi. Python' ın bu kadar popüler olmasındaki sebep şüphesiz öğrenmesi kolay bir yazılım dili olmasıdır.sadikturan adreslerinde paylaşmış olduğum python dersleri serisini takip ederek ister video ister yazılı kaynaklar yardımıyla kısa zamanda python programlama alanında uzmanlık kazanın ve hayal ettiğiniz projeyi gerçekleştirin.",
+        image: "2.jpeg",
+        main: true,
+        confirmation: true,
+      },
+      {
+        title: "Python ile Sıfırdan İleri Seviye Python Programlama",
+        url : slugField("İleri Seviye Python Programlama"),
+        subtitle:
+          "Sıfırdan İleri Seviye Python Dersleri.Veritabanı,Veri Analizi,Bot Yazımı,Web Geliştirme(Django)",
+        desc: "Python, son zamanların en popüler programlama dili haline geldi. Python' ın bu kadar popüler olmasındaki sebep şüphesiz öğrenmesi kolay bir yazılım dili olmasıdır.sadikturan adreslerinde paylaşmış olduğum python dersleri serisini takip ederek ister video ister yazılı kaynaklar yardımıyla kısa zamanda python programlama alanında uzmanlık kazanın ve hayal ettiğiniz projeyi gerçekleştirin.",
+        image: "2.jpeg",
+        main: true,
+        confirmation: true,
       },
     ]);
     // test bloglarını ilişlendirme 
     await categories[0].addBlog(blogs[0]) // burda gelen addBlog fonksiyonu bizim 
     // index.js içerisinde yaptığımız manyto many  baglantısı tarafından sequelize tarafından oluşturuluyor
     await categories[0].addBlog(blogs[1])
+    await categories[0].addBlog(blogs[2])
+    await categories[0].addBlog(blogs[3])
+    await categories[0].addBlog(blogs[4])
+    await categories[0].addBlog(blogs[5])
+    await categories[0].addBlog(blogs[6])
+  
     await categories[1].addBlog(blogs[2])
     await categories[1].addBlog(blogs[3])
     await categories[1].addBlog(blogs[0])
