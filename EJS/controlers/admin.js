@@ -182,13 +182,14 @@ exports.category_edit = async function (req, res) {
     const catid = req.params.categoryid;
     try {
       const category = await Category.findByPk(catid);
+      const blogs = await category.getBlogs()
     //   const blogs = await Blog.findAll({
     //     where:{
     //         categoryId: catid
     //     }
     //   })
     // getBlogs birecok iliskide kendisi kuruyor yukardaki koddan kurtuluyoruz
-    const blogs = await category.getBlogs()
+    
       if (category) {
         return res.render("admin/category-edit", {
           title: "category edit",
@@ -246,7 +247,9 @@ exports.blog_list = async function (req, res) {
     try {
       const blogs = await Blog.findAll({
         attributes: ["id", "title", "image"],
+        include: Category
       });
+      console.log(blogs)
       res.render("admin/blog-list", {
         title: "blog list",
         blogs: blogs,
