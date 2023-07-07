@@ -92,8 +92,7 @@ router.use("/blogs", async (req, res) => {
     console.log(err);
   }
 });
-router.all(
-  "/admin/create",
+router.all("/admin/create",
   admin,
   upload.single("createImg"),
   async (req, res) => {

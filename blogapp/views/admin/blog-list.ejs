@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include("../partials/head") %>
+  </head>
+  <body>
+    <%- include("../partials/nav") %>
+
+    <div class="container mt-3">
+      <div class="row">
+        <div class="col-md-12 mt-3">
+          <% if (action != "undefined" && action == "edit" ) { %>
+             <div class="alert alert-success">
+              <%= blogid %> Numaralı  Blog Güncellendi.
+             </div>
+          
+          <% }  if (action != "undefined" && action== "delete") { %>
+            <div class="alert alert-danger">
+              Blog Silindi.
+            </div>
+            <% } if (action != "undefined" && action== "create") { %>
+              <div class="alert alert-warning">
+                Blog Eklendi
+              </div>
+           <% } %>
+            <table class="table table-border table-stript">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">id</th>
+                        <th style="width: 150px;">resim</th>
+                        <th>başlık</th>
+                        <th>category</th>
+                        <th style="width: 150px;" ></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <% blogs.forEach(blog => { %>
+                         <tr>
+                            <td><%= blog.dataValues.id %></td>
+                            <td><img src="/static/images/<%=blog.dataValues.image %>"  class="img-fluid" alt="<%=blog.dataValues.image %>"> 
+                            <td><%= blog.dataValues.title %></td>
+                           <td><% blog.categories.forEach(category => { %>
+                           <p><%= category.name %></p>
+                            <% }) %></td>
+                            <td><a class="btn btn-sm btn-primary" href="/admin/blogs/<%=blog.dataValues.id %>"> Edit </a></td>
+                            <td><a class="btn btn-sm btn-danger" href="/admin/blogs/delete/<%=blog.dataValues.id %>"> Delete </a></td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
