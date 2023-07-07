@@ -2,32 +2,6 @@ const Blog = require("../models/blog");
 const Category = require("../models/category");
 const { Op } = require("sequelize");
 
-// exports.blogs_by_category = async function (req, res) {
-//   const slug = req.params.slug;
-//   try {
-//     const blogs = await Blog.findAll({
-//       where: {
-//         confirmation: true,
-//       },
-//       include: {
-//         model: Category,
-//         where: { url: slug },
-//       },
-
-//       raw: true,
-//     });
-//     const categories = await Category.findAll({raw:true});
-//     res.render("users/blogs", {
-//       title: "Tüm Kurslar",
-//       blogs: blogs,
-//       categories: categories,
-//       selectedCategory: slug,
-//     });
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
-
 exports.blogs_details = async function (req, res) {
   const slug = req.params.slug;
   try {
@@ -50,25 +24,26 @@ exports.blogs_details = async function (req, res) {
 };
 
 exports.blogs_list = async function (req, res) {
- const size = 2;
- const{ page = 0 } = req.query
- const slug = req.params.slug
+  const size = 2;
+  const { page = 0 } = req.query;
+  const slug = req.params.slug;
 
   try {
-    const {rows ,count} = await Blog.findAndCountAll({
-      where: {confirmation: true},
-      include: slug ? {model: Category, where: {url: slug}}:null ,
+    const { rows, count } = await Blog.findAndCountAll({
+      where: { confirmation: true },
+      include: slug ? { model: Category, where: { url: slug } } : null,
       raw: true,
-      limit:size,
-      offset: page * size
+      limit: size,
+      offset: page * size,
     });
+
     const categories = await Category.findAll();
     res.render("users/blogs", {
       title: " blogs app",
       categories: categories,
       blogs: rows,
       totalItems: count,
-      totalPages: Math.ceil(count/size),
+      totalPages: Math.ceil(count / size),
       currentPage: page,
       selectedCategory: slug,
     });
@@ -94,7 +69,7 @@ exports.main = async function (req, res) {
     const categories = await Category.findAll({
       raw: true,
     });
-    res.render("users/blogs", {
+    res.render("users/index", {
       title: " blogs app",
       categories: categories,
       blogs: blogs,

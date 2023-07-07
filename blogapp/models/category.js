@@ -15,8 +15,6 @@ const Category = sequelize.define(
   }
 );
 
-// ,{ timestams false yapmazsan her bir tabloya ekstiradan ikiş kolon daha ekliyor
-//     timestamps: false
-// }
+
 
 module.exports = Category;

@@ -10,7 +10,7 @@ exports.blog_create = async function (req, res) {
     try {
       const categories = await Category.findAll();
       res.render("admin/blog-create", {
-        title: "aloha app",
+        title: "create app",
         categories: categories,
       });
     } catch (err) {
@@ -39,6 +39,7 @@ exports.blog_create = async function (req, res) {
       res.redirect("/admin/blogs?action=create");
     } catch (err) {
       console.log(err);
+      res.status(500).send("An error occurred" + err);
     }
   }
 };
@@ -66,6 +67,7 @@ exports.blog_delete = async (req, res) => {
       res.redirect("/admin/blogs/");
     } catch (err) {
       console.log(err);
+      res.status(500).send("An error occurred" + err);
     }
   }
 };
@@ -109,9 +111,7 @@ exports.blog_edit = async function (req, res) {
     if (req.file) {
       image = req.file.filename;
       fs.unlink("./public/images/" + req.body.image, (err) => {
-        console.log(err);
-        // fs modülü kullanarak eski dosya yolunu sildik req.body.image gelen uzantı ile
-      });
+  });
     }
 
     try {
@@ -154,9 +154,36 @@ exports.blog_edit = async function (req, res) {
       res.redirect("/admin/blogs");
     } catch (err) {
       console.log(err);
+      res.status(500).send("An error occurred" + err);
     }
   }
 };
+
+exports.blog_list = async function (req, res) {
+  if (req.method === "GET") {
+    try {
+      const blogs = await Blog.findAll({
+        attributes: ["id", "title", "image"],
+        include: {
+          model: Category,
+          attributes: ["name"],
+        },
+      });
+      
+      res.render("admin/blog-list", {
+        title: "blog list",
+        blogs: blogs,
+        action: req.query.action,
+        blogid: req.query.blogid,
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).send("An error occurred" + err);
+    }
+  }
+};
+
+
 
 exports.category_remove = async function (req, res) {
      const blogid = req.body.blogid;
@@ -187,9 +214,11 @@ exports.category_create = async function (req, res) {
       res.redirect("admin/category?action=create");
     } catch (err) {
       console.log(err);
+      res.status(500).send("An error occurred" + err);
     }
   }
 };
+
 
 exports.category_delete = async (req, res) => {
   if (req.method === "GET") {
@@ -216,6 +245,7 @@ exports.category_delete = async (req, res) => {
       res.redirect("/admin/category?action=delete");
     } catch (err) {
       console.log(err);
+      res.status(500).send("An error occurred" + err);
     }
   }
 };
@@ -226,13 +256,6 @@ exports.category_edit = async function (req, res) {
     try {
       const category = await Category.findByPk(catid);
       const blogs = await category.getBlogs();
-      //   const blogs = await Blog.findAll({
-      //     where:{
-      //         categoryId: catid
-      //     }
-      //   })
-      // getBlogs birecok iliskide kendisi kuruyor yukardaki koddan kurtuluyoruz
-
       if (category) {
         return res.render("admin/category-edit", {
           title: "category edit",
@@ -262,6 +285,7 @@ exports.category_edit = async function (req, res) {
       return res.redirect("admin/category?action=edit&catid= " + catid);
     } catch (err) {
       console.log(err);
+      res.status(500).send("An error occurred");
     }
   }
 };
@@ -279,28 +303,6 @@ exports.category_list = async function (req, res) {
     } catch (err) {
       console.log(err);
       res.status(500).send("An error occurred");
-    }
-  }
-};
-exports.blog_list = async function (req, res) {
-  if (req.method === "GET") {
-    try {
-      const blogs = await Blog.findAll({
-        attributes: ["id", "title", "image"],
-        include: {
-          model: Category,
-          attributes: ["name"],
-        },
-      });
-      
-      res.render("admin/blog-list", {
-        title: "blog list",
-        blogs: blogs,
-        action: req.query.action,
-        blogid: req.query.blogid,
-      });
-    } catch (err) {
-      console.log(err);
     }
   }
 };
