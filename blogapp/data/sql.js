@@ -10,7 +10,8 @@ const sequelize = new Sequelize(
     host: config.db.host,
     define:{
       timestamps: false
-    }
+    },
+    storage: "./session.mysql"
   }
 );
 async function connect() {

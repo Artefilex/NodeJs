@@ -41,7 +41,7 @@ exports.get_login = async (req,res) =>{
      })
     }
     catch(err){
-        console.log(er)
+        console.log(err)
     }
 
 }
@@ -68,8 +68,13 @@ exports.post_login = async (req,res)=>{
 
     if(match){
         // login oldu 
-        // cokkie 
-        // session
+        // cokkie  güvenli degil el yordamıyla degistiriliebilir 
+        // res.cookie("isAuth", 1)
+        
+         // session
+         req.session.isAuth = true ;
+         req.session.fullname = user.fullname
+
         // session in db
         // token-based auth - api 
 
@@ -87,3 +92,15 @@ exports.post_login = async (req,res)=>{
     }
   }
   
+  exports.get_logout = async (req,res) =>{
+
+    try{
+        // res.clearCookie("isAuth") cokkie için 
+        await req.session.destroy();
+        return res.redirect("/")
+    }
+    catch(err){
+        console.log(err)
+    }
+
+}

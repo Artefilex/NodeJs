@@ -281,3 +281,11 @@ fs.unlink("./public/images/" + req.body.image, (err) => {
 13. slugfield(url) işlevi kullanılarak url değeri slug formatına dönüştürülür.
 14. Kategori kimliklerinin varlığına göre ilgili kategoriler güncellenir. Önce mevcut kategoriler kaldırılır, ardından seçilen kategoriler eklenir.
 15. Güncellenen blog kaydedilir (blog.save()).
+
+
+
+## auth controler 
+
+kullancı auth bilgisi ilk etapta cokkie içersinde sakladık güvensiz  
+ikinci etapta session belek üzerinde sakladık  daha güvenli ama bellek yiyor 
+3. olarak database de saklamak bellek yormaz 
