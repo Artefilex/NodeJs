@@ -3,7 +3,10 @@ const router = express.Router();
 const db = require("../data/sql");
 const imageUpload = require("../helpers/image-upload")
 const fs = require("fs")
-router.all("/admin/blogs/create", imageUpload.upload.single("image"), async function (req, res) {
+const isAuth = require("../middlewares/auth")
+
+
+router.all("/admin/blogs/create",  isAuth , imageUpload.upload.single("image"), async function (req, res) {
   if (req.method === "GET") {
     try {
       const [categories] = await db.execute("select * from categories");
@@ -34,7 +37,7 @@ router.all("/admin/blogs/create", imageUpload.upload.single("image"), async func
     }
   }
 });
-router.all("/admin/blogs/delete/:blogid", async (req, res)=>{
+router.all("/admin/blogs/delete/:blogid",  isAuth , async (req, res)=>{
 if(req.method === "GET"){
  const blogid = req.params.blogid
  try{
@@ -66,7 +69,7 @@ if(req.method === "GET"){
 
 })
 
-router.all("/admin/blogs/:blogid",  imageUpload.upload.single("image"), async function (req, res) {
+router.all("/admin/blogs/:blogid",  isAuth ,  imageUpload.upload.single("image"), async function (req, res) {
   if (req.method === "GET") {
     try {
       const blogid = req.params.blogid;
@@ -115,7 +118,7 @@ router.all("/admin/blogs/:blogid",  imageUpload.upload.single("image"), async fu
   }
 });
 
-router.all("/admin/blogs", async function (req, res) {
+router.all("/admin/blogs", isAuth ,async function (req, res) {
   if (req.method === "GET") {
     try {
       const [blogs] = await db.execute(
@@ -134,7 +137,7 @@ router.all("/admin/blogs", async function (req, res) {
 });
 
 
-router.all("/admin/category/create", async function (req, res) {
+router.all("/admin/category/create",  isAuth , async function (req, res) {
   if (req.method === "GET") {
     try {
      
@@ -157,7 +160,7 @@ router.all("/admin/category/create", async function (req, res) {
   }
 });
 
-router.all("/admin/category/delete/:catid", async (req, res)=>{
+router.all("/admin/category/delete/:catid",  isAuth , async (req, res)=>{
   if(req.method === "GET"){
    const catid = req.params.catid
    try{
@@ -190,7 +193,7 @@ router.all("/admin/category/delete/:catid", async (req, res)=>{
   })
 
 
-router.all("/admin/category/:catid", async function (req, res) {
+router.all("/admin/category/:catid",  isAuth , async function (req, res) {
   if (req.method === "GET") {
     try {
       const catid= req.params.catid;
@@ -224,7 +227,7 @@ router.all("/admin/category/:catid", async function (req, res) {
   }
 });
 
-router.all("/admin/category", async function (req, res) {
+router.all("/admin/category",  isAuth , async function (req, res) {
   if (req.method === "GET") {
     try {
       const [categories,] = await db.execute(
