@@ -13,7 +13,15 @@ const User = sequelize.define("user",{
    email:{
     type:DataTypes.STRING,
     allowNull: false
-   }
+   },
+   resetToken:{
+     type: DataTypes.STRING,
+     allowNull: true
+   },
+   resetTokenExiration:{
+    type: DataTypes.DATE,
+    allowNull: true
+  }
 
 },{timestaps: true})
 

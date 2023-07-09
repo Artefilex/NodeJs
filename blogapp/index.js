@@ -68,11 +68,11 @@ Blog.belongsTo(User);
 User.hasMany(Blog);
 
 
-// async function sync() {
-//   await sequelizeDb.sync({ force: true });
-//   await dummyData();
-// }
-// sync();
+async function sync() {
+  // await sequelizeDb.sync({ force: true });
+  // await dummyData();
+}
+sync();
 app.listen(3000, function () {
   console.log("listening on port 3000");
 });
