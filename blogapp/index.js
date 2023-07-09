@@ -29,6 +29,7 @@ const locals = require("./middlewares/locals")
 const Category = require("./models/category");
 const Blog = require("./models/blog");
 const User = require("./models/user");
+const Role = require("./models/role");
 
 // template engine
 
@@ -36,7 +37,7 @@ app.set("view engine", "ejs");
 
 // middleware
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 // app.use(cookieParser());
 app.use(
   session({
@@ -66,7 +67,8 @@ Category.belongsToMany(Blog, { through: "blogCategories" });
 Blog.belongsTo(User);
 
 User.hasMany(Blog);
-
+Role.belongsToMany(User, {through: "roleUsers"});
+User.belongsToMany(Role, {through: "roleUsers"})
 
 async function sync() {
   // await sequelizeDb.sync({ force: true });

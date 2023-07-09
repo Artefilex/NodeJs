@@ -1,10 +1,13 @@
 const Blog = require("../models/blog");
 const Category = require("../models/category");
+const Role = require("../models/role");
+const User = require("../models/user");
 const fs = require("fs");
 const { Op } = require("sequelize");
 const db = require("../data/sql");
 const slugfield = require("../helpers/slugfield");
 
+const sequelize = require("../data/sql");
 exports.blog_create = async function (req, res) {
   if (req.method === "GET") {
     try {
@@ -22,7 +25,7 @@ exports.blog_create = async function (req, res) {
       const subtitle = req.body.subtitle;
       const desc = req.body.desc;
       const image = req.file.filename;
-     
+
       const main = req.body.main == "on" ? 1 : 0;
       const onay = req.body.onay == "on" ? 1 : 0;
 
@@ -33,7 +36,7 @@ exports.blog_create = async function (req, res) {
         desc: desc,
         image: image,
         main: main,
-        confirmation: onay 
+        confirmation: onay,
       });
 
       res.redirect("/admin/blogs?action=create");
@@ -110,8 +113,7 @@ exports.blog_edit = async function (req, res) {
     let image = req.body.image;
     if (req.file) {
       image = req.file.filename;
-      fs.unlink("./public/images/" + req.body.image, (err) => {
-  });
+      fs.unlink("./public/images/" + req.body.image, (err) => {});
     }
 
     try {
@@ -127,11 +129,11 @@ exports.blog_edit = async function (req, res) {
       if (blog) {
         blog.title = header;
         blog.subtitle = subtitle;
-        
+
         blog.desc = desc;
         blog.image = image;
         blog.main = main;
-        blog.url =slugfield( url);
+        blog.url = slugfield(url);
         blog.confirmation = onay;
         console.log(categorieIds);
         if (categorieIds == undefined) {
@@ -169,7 +171,7 @@ exports.blog_list = async function (req, res) {
           attributes: ["name"],
         },
       });
-      
+
       res.render("admin/blog-list", {
         title: "blog list",
         blogs: blogs,
@@ -183,18 +185,14 @@ exports.blog_list = async function (req, res) {
   }
 };
 
-
-
 exports.category_remove = async function (req, res) {
-     const blogid = req.body.blogid;
-     const catid = req.body.categoryid;
+  const blogid = req.body.blogid;
+  const catid = req.body.categoryid;
 
-    await db.query(
-      `delete from blogcategories where blogId =${blogid} and categoryId=${catid}`
-    );
-    res.redirect("/admin/category/" + catid);
-  
-   
+  await db.query(
+    `delete from blogcategories where blogId =${blogid} and categoryId=${catid}`
+  );
+  res.redirect("/admin/category/" + catid);
 };
 
 exports.category_create = async function (req, res) {
@@ -218,7 +216,6 @@ exports.category_create = async function (req, res) {
     }
   }
 };
-
 
 exports.category_delete = async (req, res) => {
   if (req.method === "GET") {
@@ -304,5 +301,160 @@ exports.category_list = async function (req, res) {
       console.log(err);
       res.status(500).send("An error occurred");
     }
+  }
+};
+
+exports.get_roles = async function (req, res) {
+  try {
+    const roles = await Role.findAll({
+      attributes: {
+        include: [
+          "role.id",
+          "role.rolename",
+          [sequelize.fn("COUNT", sequelize.col("users.id")), "user_count"],
+        ],
+      },
+      include: [{ model: User, attributes: ["id"] }],
+      group: ["role.id"],
+      raw: true,
+      includeIgnoreAttributes: false,
+    });
+
+    res.render("admin/role-list", {
+      title: "role list",
+      roles: roles,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred");
+  }
+};
+
+exports.get_roles_edit = async function (req, res) {
+  const id = req.params.roleid;
+  try {
+    const role = await Role.findByPk(id);
+    const users = await role.getUsers();
+    if (role) {
+      return res.render("admin/role-edit", {
+        title: role.rolename,
+        role: role,
+        users: users,
+      });
+    }
+
+    res.redirect("admin/roles");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred");
+  }
+};
+exports.post_roles_edit = async function (req, res) {
+  const roleid = req.body.roleid;
+  const rolename = req.body.rolename;
+  try {
+    await Role.update(
+      { rolename: rolename },
+      {
+        where: {
+          id: roleid,
+        },
+      }
+    );
+    return res.redirect("/admin/roles");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred");
+  }
+};
+
+exports.roles_remove = async function (req, res) {
+  const roleid = req.body.roleid;
+  const userid = req.body.userid;
+  try {
+    await sequelize.query(
+      `delete from roleUsers  where userId= ${userid} and roleId= ${roleid}  `
+    );
+    return res.redirect("/admin/roles/" + roleid);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred");
+  }
+};
+
+exports.get_users = async function (req, res) {
+  try {
+    const users = await User.findAll({
+      attributes: ["id", "fullname", "email"],
+      include: {
+        model: Role,
+        attributes: ["rolename"],
+      },
+    });
+    res.render("admin/user-list", {
+      title: "users list ",
+      users: users,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred");
+  }
+};
+exports.get_users_edit = async function (req, res) {
+  const userid = req.params.userid;
+  try {
+    const user = await User.findOne({
+      where: { id: userid },
+      include: { model: Role, attributes: ["id"] },
+    });
+    const roles = await Role.findAll();
+
+    res.render("admin/user-edit", {
+      title: "users list ",
+      user: user,
+      roles: roles,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred");
+  }
+};
+
+exports.post_users_edit = async function (req, res) {
+  const userid = req.params.userid;
+  const fullname = req.body.fullname;
+  const email =  req.body.email;
+  const roleIds = req.body.roles;
+
+  // console.log(req.body)
+  try {
+    const user = await User.findOne({
+      where: { id: userid },
+      include: { model: Role, attributes: ["id"] },
+    });
+    if(user){
+      user.fullname = fullname,
+      user.email = email 
+      if(roleIds == undefined){
+        await user.removeRoles(user.roles)
+      }else{
+        await user.removeRoles(user.roles)
+        const selectedRoles = await Role.findAll({
+          where:{
+            id:{
+              [Op.in]:roleIds
+            }
+          }
+        })
+        await user.addRoles(selectedRoles)
+      }
+     await user.save()
+     return res.redirect("/admin/users")
+    }
+    return res.redirect("/admin/users")
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred");
   }
 };
