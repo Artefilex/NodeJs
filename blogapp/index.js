@@ -1,3 +1,4 @@
+
 // express modulleri
 const express = require("express");
 const app = express();
@@ -21,6 +22,8 @@ const authRoutes = require("./routes/auth");
 const sequelizeDb = require("./data/sql");
 const dummyData = require("./data/dummy-data");
 const locals = require("./middlewares/locals")
+
+
 // models
 
 const Category = require("./models/category");
@@ -34,7 +37,7 @@ app.set("view engine", "ejs");
 // middleware
 
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(
   session({
     secret: "baris", // random guid oluştıur,
@@ -48,7 +51,10 @@ app.use(
     })
   })
 );
+
 app.use(locals)
+
+
 app.use("/libs", express.static(path.join(__dirname, "node_modules")));
 app.use("/static", express.static(path.join(__dirname, "public")));
 app.use(sequelize);

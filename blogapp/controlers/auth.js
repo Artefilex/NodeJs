@@ -1,5 +1,8 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const SENDMAIL =require("../helpers/send-mail");
+const config = require("../config");
+const mailText = require("../helpers/mail-template")
 exports.get_register = async (req, res) => {
   try {
     return res.render("auth/register", {
@@ -16,30 +19,41 @@ exports.post_register = async (req, res) => {
   const password = req.body.password;
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
-    const user = await User.findOne({
-      where: {
-        email: email,
-      },
+    const user = await User.findOne({where: {email: email},
     });
     if (user) {
+      
       req.session.message = {
-        text: "Girdiğiniz email adresine ait bir kayıt bulunmaktadır ",
+        text: "Girdiğiniz email adresine ait bir kayıt bulunmaktadır",
         class: "warning",
       };
 
       return res.redirect("login");
     }
 
-    await User.create({
+    const newUser =  await User.create({
       fullname: name,
       email: email,
       password: hashedPassword,
     });
+    const messagesendto = "Hi there, you were emailed me through nodemailer"
+    const options ={
+      from: config.email.from,
+      to: newUser.email,
+      subject: "hesap oluşturuldu",
+      html: mailText(messagesendto),
+      text: messagesendto
+
+    }
+    SENDMAIL(options, (info) =>{
+      console.log("Email sent successfully");
+     console.log("MESSAGE ID: ", info.messageId);
+    })
     req.session.message = {
       text: "hesaba giriş yapabilirsiniz ",
       class: "success",
     };
-    return res.redirect("/login");
+    return res.redirect("login");
   } catch (err) {
     console.log(err);
   }
@@ -52,6 +66,7 @@ exports.get_login = async (req, res) => {
     res.render("auth/login", {
       title: "login",
       message: message,
+    
     });
   } catch (err) {
     console.log(err);
@@ -70,7 +85,7 @@ exports.post_login = async (req, res) => {
     if (!user) {
       return res.render("auth/login", {
         title: "login",
-        message: { text: "email hatalı ya da yok ", class: "warning" },
+        message: { text: "email hatalı ya da yok", class: "warning" },
       });
     }
     //   parola kontrolü
@@ -94,7 +109,7 @@ exports.post_login = async (req, res) => {
 
     res.render("auth/login", {
       title: "login",
-      message: { text: "parola hatalı  ", class: "warning" },
+      message: { text: "parola hatalı", class: "warning" },
     });
   } catch (err) {
     console.log(err);

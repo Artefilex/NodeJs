@@ -15,12 +15,14 @@
       <div class="row">
         <div class="col-md-12">
           <!-- file yüklemesi yaparken multer yapıyoruz default olarak formdaki text verilerini alıyor -->
+          <!-- hidden inputtan alamdıgımız csrftoken bilgilerini action içerisine parametre olarak gectik  -->
           <form
-            action=""
+         
             class="mt-3"
             method="post"
             enctype="multipart/form-data"
           >
+          
             <div class="row mb-3">
               <label for="baslık" class="col-sm-2 col-form-label">Baslık</label>
               <div class="col-sm-8">
