@@ -62,6 +62,7 @@ exports.get_login = async (req, res) => {
   const message = req.session.message;
   delete req.session.message;
   try {
+   
     res.render("auth/login", {
       title: "login",
       message: message,
@@ -88,27 +89,38 @@ exports.post_login = async (req, res) => {
     }
     //   parola kontrolü
 
+    // 0506mka1938
+
+
     const match = await bcrypt.compare(password, user.password);
-
+    if(!match){
+      res.render("auth/login", {
+        title: "login",
+        message: { text: "parola hatalı", class: "warning" },
+      });
+    }
     if (match) {
-      // login oldu
-      // cokkie  güvenli degil el yordamıyla degistiriliebilir
-      // res.cookie("isAuth", 1)
-
+      const userRoles = await user.getRoles({
+        attributes: ["rolename"],
+        raw: true
+      });
+      req.session.roles = userRoles.map((role) => role["rolename"])
+      
       // session
       req.session.isAuth = true;
       req.session.fullname = user.fullname;
+      req.session.userid = user.id
       const url = req.query.returnUrl || "/";
+      console.log(url)
+      return res.redirect(url);
+     
       // session in db
       // token-based auth - api
-
-      return res.redirect(url);
+  
+  
+    
     }
-
-    res.render("auth/login", {
-      title: "login",
-      message: { text: "parola hatalı", class: "warning" },
-    });
+    
   } catch (err) {
     console.log(err);
   }
@@ -116,8 +128,8 @@ exports.post_login = async (req, res) => {
 
 exports.get_logout = async (req, res) => {
   try {
-    // res.clearCookie("isAuth") cokkie için
     await req.session.destroy();
+    await new Promise((resolve) => setTimeout(resolve, 500));
     return res.redirect("/");
   } catch (err) {
     console.log(err);

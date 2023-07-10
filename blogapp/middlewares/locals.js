@@ -1,6 +1,17 @@
-module.exports =  (req,res , next)=>{
+module.exports.setLocals = (req, res, next) => {
     res.locals.isAuth = req.session.isAuth;
-    res.locals.fullname = req.session.fullname
-    next()
-}
+    res.locals.fullname = req.session.fullname;
+    res.locals.isModerator = req.session.roles
+      ? req.session.roles.includes("moderator")
+      : false;
+    res.locals.isAdmin = req.session.roles
+      ? req.session.roles.includes("admin")
+      : false;
+    next();
+  };
+  
+  
+  
+  
+  
 

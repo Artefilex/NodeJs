@@ -6,8 +6,8 @@ const fs = require("fs");
 const { Op } = require("sequelize");
 const db = require("../data/sql");
 const slugfield = require("../helpers/slugfield");
-
 const sequelize = require("../data/sql");
+
 exports.blog_create = async function (req, res) {
   if (req.method === "GET") {
     try {
@@ -25,7 +25,7 @@ exports.blog_create = async function (req, res) {
       const subtitle = req.body.subtitle;
       const desc = req.body.desc;
       const image = req.file.filename;
-
+      const userid = req.session.userid;
       const main = req.body.main == "on" ? 1 : 0;
       const onay = req.body.onay == "on" ? 1 : 0;
 
@@ -37,6 +37,7 @@ exports.blog_create = async function (req, res) {
         image: image,
         main: main,
         confirmation: onay,
+        userId: userid,
       });
 
       res.redirect("/admin/blogs?action=create");
@@ -50,8 +51,12 @@ exports.blog_create = async function (req, res) {
 exports.blog_delete = async (req, res) => {
   if (req.method === "GET") {
     const blogid = req.params.blogid;
+    const userid = req.session.userid;
+    const isAdmin = req.session.roles.includes("admin");
     try {
-      const blog = await Blog.findByPk(blogid);
+      const blog = await Blog.findOne({
+        where: isAdmin ? { id: blogid } : { id: blogid, userId: userid },
+      });
       if (blog) {
         res.render("admin/blog-delete", {
           title: "delete blog",
@@ -67,7 +72,7 @@ exports.blog_delete = async (req, res) => {
         await blog.destroy();
         res.redirect("/admin/blogs?action=delete");
       }
-      res.redirect("/admin/blogs/");
+      // res.redirect("/admin/blogs/");
     } catch (err) {
       console.log(err);
       res.status(500).send("An error occurred" + err);
@@ -77,27 +82,27 @@ exports.blog_delete = async (req, res) => {
 
 exports.blog_edit = async function (req, res) {
   if (req.method === "GET") {
+    const userid = req.session.userid;
     const blogid = req.params.blogid;
+    const isAdmin = req.session.roles.includes("admin");
     try {
       const blog = await Blog.findOne({
-        where: {
-          id: blogid,
-        },
+        where: isAdmin ? { id: blogid } : { id: blogid, userId: userid },
         include: {
           model: Category,
           attributes: ["id"],
         },
       });
       const categories = await Category.findAll();
-
+     console.log(blogid ,userid , isAdmin)
       if (blog) {
         return res.render("admin/blog-edit", {
           title: "blogs edit",
-          blog: blog.dataValues,
+          blog: blog,
           categories: categories,
         });
       }
-      res.redirect("admin/blogs");
+      res.redirect("/admin/blogs");
     } catch (err) {
       console.log(err);
     }
@@ -110,6 +115,7 @@ exports.blog_edit = async function (req, res) {
     const onay = req.body.onay == "on" ? 1 : 0;
     const categorieIds = req.body.catagories;
     const url = req.body.url;
+    const userid = req.session.userid;
     let image = req.body.image;
     if (req.file) {
       image = req.file.filename;
@@ -120,6 +126,7 @@ exports.blog_edit = async function (req, res) {
       const blog = await Blog.findOne({
         where: {
           id: blogid,
+          userId: userid,
         },
         include: {
           model: Category,
@@ -149,11 +156,11 @@ exports.blog_edit = async function (req, res) {
           });
           await blog.addCategories(selectedCategories);
         }
-
+        
         await blog.save();
         return res.redirect("/admin/blogs?action=edit&blogid=" + blogid);
       }
-      res.redirect("/admin/blogs");
+      // res.redirect("/admin/blogs");
     } catch (err) {
       console.log(err);
       res.status(500).send("An error occurred" + err);
@@ -163,6 +170,9 @@ exports.blog_edit = async function (req, res) {
 
 exports.blog_list = async function (req, res) {
   if (req.method === "GET") {
+    const userid = req.session.userid;
+    const isModerator = req.session.roles.includes("moderator");
+    const isAdmin = req.session.roles.includes("admin");
     try {
       const blogs = await Blog.findAll({
         attributes: ["id", "title", "image"],
@@ -170,6 +180,7 @@ exports.blog_list = async function (req, res) {
           model: Category,
           attributes: ["name"],
         },
+        where: isModerator && !isAdmin ? { userId: userid } : null,
       });
 
       res.render("admin/blog-list", {
@@ -423,7 +434,7 @@ exports.get_users_edit = async function (req, res) {
 exports.post_users_edit = async function (req, res) {
   const userid = req.params.userid;
   const fullname = req.body.fullname;
-  const email =  req.body.email;
+  const email = req.body.email;
   const roleIds = req.body.roles;
 
   // console.log(req.body)
@@ -432,27 +443,25 @@ exports.post_users_edit = async function (req, res) {
       where: { id: userid },
       include: { model: Role, attributes: ["id"] },
     });
-    if(user){
-      user.fullname = fullname,
-      user.email = email 
-      if(roleIds == undefined){
-        await user.removeRoles(user.roles)
-      }else{
-        await user.removeRoles(user.roles)
+    if (user) {
+      (user.fullname = fullname), (user.email = email);
+      if (roleIds == undefined) {
+        await user.removeRoles(user.roles);
+      } else {
+        await user.removeRoles(user.roles);
         const selectedRoles = await Role.findAll({
-          where:{
-            id:{
-              [Op.in]:roleIds
-            }
-          }
-        })
-        await user.addRoles(selectedRoles)
+          where: {
+            id: {
+              [Op.in]: roleIds,
+            },
+          },
+        });
+        await user.addRoles(selectedRoles);
       }
-     await user.save()
-     return res.redirect("/admin/users")
+      await user.save();
+      return res.redirect("/admin/users");
     }
-    return res.redirect("/admin/users")
-
+    return res.redirect("/admin/users");
   } catch (err) {
     console.log(err);
     res.status(500).send("An error occurred");

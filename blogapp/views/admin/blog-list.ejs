@@ -38,7 +38,7 @@
                     <% blogs.forEach(blog => { %>
                          <tr>
                             <td><%= blog.dataValues.id %></td>
-                            <td><img src="/static/images/<%=blog.dataValues.image %>"  class="img-fluid" alt="<%=blog.dataValues.image %>"> 
+                            <td><img src="/static/images/<%=blog.dataValues.image%>"  class="img-fluid" alt="<%=blog.dataValues.image %>"> 
                             <td><%= blog.dataValues.title %></td>
                            <td><% blog.categories.forEach(category => { %>
                            <p><%= category.name %></p>

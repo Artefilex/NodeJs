@@ -26,10 +26,16 @@ async function populate() {
         password: await bcrypt.hash("0506mka1938", 10),
       },
       {
+        fullname: "baris tuncdemir",
+        email: "baris.tncdmr@gmail.com",
+        password: await bcrypt.hash("0506mka1938", 10),
+      },
+      {
         fullname: "artefilex",
         email: "artefilex@gmail.com",
         password: await bcrypt.hash("0506mka1938", 10),
       },
+      
     ]);
     const role = await Role.bulkCreate([
       {rolename:"admin"},
@@ -49,6 +55,7 @@ async function populate() {
         image: "1.jpeg",
         main: true,
         confirmation: true,
+        userId: 2
       },
       {
         title: "Python ile Sıfırdan İleri Seviye Python Programlama",
@@ -59,6 +66,7 @@ async function populate() {
         image: "2.jpeg",
         main: true,
         confirmation: true,
+        userId: 2
       },
       {
         title: "Python ile Sıfırdan İleri Seviye Python Programlama",
@@ -69,6 +77,7 @@ async function populate() {
         image: "2.jpeg",
         main: true,
         confirmation: true,
+        userId: 2
       },
       {
         title: "Python ile Sıfırdan İleri Seviye Python Programlama",
@@ -79,6 +88,7 @@ async function populate() {
         image: "2.jpeg",
         main: true,
         confirmation: true,
+        userId: 2
       },
       {
         title: "Python ile Sıfırdan İleri Seviye Python Programlama",
@@ -89,6 +99,7 @@ async function populate() {
         image: "2.jpeg",
         main: true,
         confirmation: true,
+        userId: 1
       },
       {
         title: "Python ile Sıfırdan İleri Seviye Python Programlama",
@@ -99,6 +110,7 @@ async function populate() {
         image: "2.jpeg",
         main: true,
         confirmation: true,
+        userId: 1
       },
       {
         title: "Python ile Sıfırdan İleri Seviye Python Programlama",
@@ -109,12 +121,13 @@ async function populate() {
         image: "2.jpeg",
         main: true,
         confirmation: true,
+        userId: 1
       },
     ]);
     await user[0].addRole(role[0]) // admin => baris
-    await user[0].addRole(role[1]) // admin => baris
     await user[1].addRole(role[1]) // moderator => sedef
     await user[2].addRole(role[2]) // quest => artefilex
+    await user[3].addRole(role[1])
     await categories[0].addBlog(blogs[0]);
     await categories[0].addBlog(blogs[1]);
     await categories[0].addBlog(blogs[2]);
@@ -138,6 +151,7 @@ async function populate() {
       image: "1.jpeg",
       main: true,
       confirmation: true,
+      userId: 1
     });
   }
 }

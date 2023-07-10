@@ -53,7 +53,7 @@ app.use(
   })
 );
 
-app.use(locals)
+app.use(locals.setLocals)
 
 
 app.use("/libs", express.static(path.join(__dirname, "node_modules")));
