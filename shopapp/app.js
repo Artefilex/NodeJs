@@ -5,8 +5,8 @@ const productRouter = require("./routes/products")
 const cors = require("cors")
 const mongoose =require("mongoose")
 const connectDb = require("./config");
-const Category = require("./models/category");
-const Product = require("./models/product");
+const categoryRouter = require("./routes/categories")
+
 // http methods get, post put delete
 app.use(express.json());
 
@@ -27,7 +27,7 @@ app.use(cors({
 
 app.use(homeRouter)
 app.use("/api/product", productRouter)
-
+app.use("/api/category", categoryRouter)
 const databaseConnect = async () =>{
   try{
     await mongoose.connect(connectDb)
