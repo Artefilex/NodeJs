@@ -21,13 +21,28 @@ exports.blog_create = async function (req, res) {
     }
   } else if (req.method === "POST") {
     try {
+     
       const title = req.body.header;
       const subtitle = req.body.subtitle;
       const desc = req.body.desc;
-      const image = req.file.filename;
+      let image = "";
       const userid = req.session.userid;
       const main = req.body.main == "on" ? 1 : 0;
       const onay = req.body.onay == "on" ? 1 : 0;
+
+      if(title== ""){
+        throw new Error("title is not empty")
+      }
+      if(title.length < 5 || title.length > 30){
+        throw new Error("title is must be between 5 and 30 ")
+      }
+      if(req.file){
+          image =  req.file.filename;
+          fs.unlink("./public/images" +  req.body.image,err =>{
+            console.log(err)
+          })
+       }
+
 
       await Blog.create({
         title: title,
@@ -43,7 +58,16 @@ exports.blog_create = async function (req, res) {
       res.redirect("/admin/blogs?action=create");
     } catch (err) {
       console.log(err);
-      res.status(500).send("An error occurred" + err);
+      let danger = ""
+      if(err instanceof Error) {
+        danger += err.message
+        res.render("admin/blog-create", {
+          title: "create app",
+          categories:await Category.findAll(),
+          message: {text: danger , class: "danger"},
+         
+        });
+      }
     }
   }
 };
@@ -94,7 +118,7 @@ exports.blog_edit = async function (req, res) {
         },
       });
       const categories = await Category.findAll();
-     console.log(blogid ,userid , isAdmin)
+     
       if (blog) {
         return res.render("admin/blog-edit", {
           title: "blogs edit",
@@ -107,6 +131,7 @@ exports.blog_edit = async function (req, res) {
       console.log(err);
     }
   } else if (req.method === "POST") {
+    const isAdmin = req.session.roles.includes("admin");
     const blogid = req.body.blogid;
     const header = req.body.header;
     const subtitle = req.body.subtitle;
@@ -124,10 +149,7 @@ exports.blog_edit = async function (req, res) {
 
     try {
       const blog = await Blog.findOne({
-        where: {
-          id: blogid,
-          userId: userid,
-        },
+        where: isAdmin ? { id: blogid } : { id: blogid, userId: userid },
         include: {
           model: Category,
           attributes: ["id"],

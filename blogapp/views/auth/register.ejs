@@ -15,6 +15,12 @@
       <div class="row">
         <div class="col-md-12">
           <!-- file yüklemesi yaparken multer yapıyoruz default olarak formdaki text verilerini alıyor -->
+          <% if (typeof  message!= "undefined") { %>
+            <div class="alert alert-<%=message.class%>"> 
+              <span> <%=message.text %></span>
+            </div>
+            <% } %>
+          
           <form
             action=""
             class="mt-3"

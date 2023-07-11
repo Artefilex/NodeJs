@@ -1,41 +1,41 @@
 const User = require("../models/user");
-const bcrypt = require("bcrypt");
+// const bcrypt = require("bcrypt");
 const SENDMAIL = require("../helpers/send-mail");
 const config = require("../config");
 const mailText = require("../helpers/mail-template");
 const crypto = require("crypto");
 const { Op } = require("sequelize");
 
-exports.get_register = async (req, res) => {
+exports.get_register = async (req, res, next) => {
   try {
     return res.render("auth/register", {
       title: "register",
     });
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
-exports.post_register = async (req, res) => {
+exports.post_register = async (req, res, next) => {
   const name = req.body.name;
   const email = req.body.email;
   const password = req.body.password;
-  const hashedPassword = await bcrypt.hash(password, 10);
+  // const hashedPassword = await bcrypt.hash(password, 10);
   try {
-    const user = await User.findOne({ where: { email: email } });
-    if (user) {
-      req.session.message = {
-        text: "Girdiğiniz email adresine ait bir kayıt bulunmaktadır",
-        class: "warning",
-      };
+    // const user = await User.findOne({ where: { email: email } });
+    // if (user) {
+    //   req.session.message = {
+    //     text: "Girdiğiniz email adresine ait bir kayıt bulunmaktadır",
+    //     class: "warning",
+    //   };
 
-      return res.redirect("login");
-    }
+    //   return res.redirect("login");
+    // }
 
     const newUser = await User.create({
       fullname: name,
       email: email,
-      password: hashedPassword,
+      password: password,
     });
     const messagesendto = `Hi ${newUser.fullname}, you were emailed me through nodemailer`;
     const options = {
@@ -54,25 +54,44 @@ exports.post_register = async (req, res) => {
     };
     return res.redirect("login");
   } catch (err) {
-    console.log(err);
+    let msg = "";
+    // console.log(err.name) // SequelizeValidationError , SequelizeUniqueConstraintError
+    if (
+      err.name == "SequelizeValidationError" ||
+      err.name == "SequelizeUniqueConstraintError"
+    ) {
+      for (let e of err.errors) {
+        msg += e.message + "  ";
+        return res.render("auth/register", {
+          title: "register",
+          message: {
+            text: msg,
+            class: "danger",
+          },
+        });
+      }
+    } else {
+      // msg += "bilinmeyen bir hata oluştu tekrar deneyin"
+      // res.redirect("/500")
+      next(err);
+    }
   }
 };
 
-exports.get_login = async (req, res) => {
+exports.get_login = async (req, res, next) => {
   const message = req.session.message;
   delete req.session.message;
   try {
-   
     res.render("auth/login", {
       title: "login",
       message: message,
     });
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
-exports.post_login = async (req, res) => {
+exports.post_login = async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   try {
@@ -91,9 +110,8 @@ exports.post_login = async (req, res) => {
 
     // 0506mka1938
 
-
     const match = await bcrypt.compare(password, user.password);
-    if(!match){
+    if (!match) {
       res.render("auth/login", {
         title: "login",
         message: { text: "parola hatalı", class: "warning" },
@@ -102,41 +120,37 @@ exports.post_login = async (req, res) => {
     if (match) {
       const userRoles = await user.getRoles({
         attributes: ["rolename"],
-        raw: true
+        raw: true,
       });
-      req.session.roles = userRoles.map((role) => role["rolename"])
-      
+      req.session.roles = userRoles.map((role) => role["rolename"]);
+
       // session
       req.session.isAuth = true;
       req.session.fullname = user.fullname;
-      req.session.userid = user.id
+      req.session.userid = user.id;
       const url = req.query.returnUrl || "/";
-      console.log(url)
+      console.log(url);
       return res.redirect(url);
-     
+
       // session in db
       // token-based auth - api
-  
-  
-    
     }
-    
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
-exports.get_logout = async (req, res) => {
+exports.get_logout = async (req, res, next) => {
   try {
     await req.session.destroy();
     await new Promise((resolve) => setTimeout(resolve, 500));
     return res.redirect("/");
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
-exports.get_reset = async (req, res) => {
+exports.get_reset = async (req, res, next) => {
   const message = req.session.message;
   delete req.session.message;
   try {
@@ -145,10 +159,10 @@ exports.get_reset = async (req, res) => {
       message: message,
     });
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
-exports.post_reset = async (req, res) => {
+exports.post_reset = async (req, res, next) => {
   const mail = req.body.email;
   try {
     var token = crypto.randomBytes(32).toString("hex");
@@ -189,49 +203,52 @@ exports.post_reset = async (req, res) => {
     };
     res.redirect("login");
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
-exports.get_newpassword = async (req, res) => {
- const token= req.params.token
+exports.get_newpassword = async (req, res, next) => {
+  const token = req.params.token;
   try {
-   const user = await User.findOne({where: {
-    resetToken : token,
-    resetTokenExiration:{
-      [Op.gt] : Date.now()
-    }
-   }}) 
+    const user = await User.findOne({
+      where: {
+        resetToken: token,
+        resetTokenExiration: {
+          [Op.gt]: Date.now(),
+        },
+      },
+    });
     return res.render("auth/new-password", {
       title: "new password",
-      token:token,
-      userId: user.id
+      token: token,
+      userId: user.id,
     });
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };
 
-exports.post_newpassword = async (req, res) => {
- const token = req.body.token
- const userId = req.body.userId
- const password = req.body.password
+exports.post_newpassword = async (req, res, next) => {
+  const token = req.body.token;
+  const userId = req.body.userId;
+  const password = req.body.password;
   try {
-    const user = await User.findOne({where: {
-      resetToken : token,
-      resetTokenExiration:{
-        [Op.gt] : Date.now()
+    const user = await User.findOne({
+      where: {
+        resetToken: token,
+        resetTokenExiration: {
+          [Op.gt]: Date.now(),
+        },
+        id: userId,
       },
-      id: userId
-     }}) 
-     user.password = await bcrypt.hash(password, 10)
-     user.resetToken = null;
-     user.resetTokenExiration = null
-     await user.save()
-     req.session.message = {text: "parola güncellendi ",class: "success"}
-    return res.redirect("login")
-  
+    });
+    user.password = await bcrypt.hash(password, 10);
+    user.resetToken = null;
+    user.resetTokenExiration = null;
+    await user.save();
+    req.session.message = { text: "parola güncellendi ", class: "success" };
+    return res.redirect("login");
   } catch (err) {
-    console.log(err);
+    next(err);
   }
 };

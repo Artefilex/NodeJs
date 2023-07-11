@@ -18,7 +18,7 @@ exports.blogs_details = async function (req, res) {
         
       });
     }
-    res.redirect("/");
+    res.redirect("/404");
   } catch (err) {
     console.log(err);
   }

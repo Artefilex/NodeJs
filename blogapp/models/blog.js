@@ -32,7 +32,14 @@ const Blog = sequelize.define("blog", {
     allowNull: false,
   },
 },{
-  timestamps: true
-});
+  timestamps: true,
+  validate: {
+    chekcValid(){
+      if(this.main && !this.confirmation){
+        throw new Error("anasayfa bloğu onaylanmadı ")
+      }
+    }
+  }
+} );
 
 module.exports = Blog;

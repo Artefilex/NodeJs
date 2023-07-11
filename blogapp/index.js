@@ -1,4 +1,3 @@
-
 // express modulleri
 const express = require("express");
 const app = express();
@@ -11,7 +10,6 @@ const SequelizeStore = require("connect-session-sequelize")(session.Store);
 // node_modules
 const path = require("path");
 
-
 // routes
 const userRoutes = require("./routes/user");
 const sequelize = require("./routes/sequelize");
@@ -21,11 +19,11 @@ const authRoutes = require("./routes/auth");
 
 const sequelizeDb = require("./data/sql");
 const dummyData = require("./data/dummy-data");
-const locals = require("./middlewares/locals")
-
+const locals = require("./middlewares/locals");
 
 // models
-
+const errorHandling = require("./middlewares/eror-handling")
+const log = require("./middlewares/loglama");
 const Category = require("./models/category");
 const Blog = require("./models/blog");
 const User = require("./models/user");
@@ -48,27 +46,34 @@ app.use(
       maxAge: 1000 * 60 * 24, // bir günlük session oluşturduk
     },
     store: new SequelizeStore({
-      db: sequelizeDb 
-    })
+      db: sequelizeDb,
+    }),
   })
 );
 
-app.use(locals.setLocals)
-
+app.use(locals.setLocals);
 
 app.use("/libs", express.static(path.join(__dirname, "node_modules")));
 app.use("/static", express.static(path.join(__dirname, "public")));
 app.use(sequelize);
 app.use(userRoutes);
 app.use("/account", authRoutes);
+// app.use("/500",(req,res) =>{
+//   res.status(500).render("error/500" ,{title: "hata sayfası"})
+// })
+app.use("*",(req,res)=>{
+ res.status(404).render("error/404", {title: "not found"})
+})
+app.use(log);
+app.use(errorHandling);
 
 Blog.belongsToMany(Category, { through: "blogCategories" });
 Category.belongsToMany(Blog, { through: "blogCategories" });
 Blog.belongsTo(User);
 
 User.hasMany(Blog);
-Role.belongsToMany(User, {through: "roleUsers"});
-User.belongsToMany(Role, {through: "roleUsers"})
+Role.belongsToMany(User, { through: "roleUsers" });
+User.belongsToMany(Role, { through: "roleUsers" });
 
 async function sync() {
   // await sequelizeDb.sync({ force: true });
