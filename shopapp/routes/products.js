@@ -1,32 +1,41 @@
 const express = require("express")
 const router = express.Router()
-const Joi = require("joi");
-const products = [
-    { id: 1, name: "samsung ", price: 2000 },
-    { id: 2, name: "samsung2 ", price: 4000 },
-    { id: 3, name: "samsung3 ", price: 5000 },
-  ];
 
-router.get("/", (req, res) => {
-    res.send(products);
+
+const { Product, validateProduct} = require("../models/product") 
+
+ 
+
+router.get("/", async (req, res) => {
+   const products = await Product.find(); //tümünü getir
+  // const products = await Product.find({price:4000 , isActive : true}) // price 4000 isActive true olanı getirir
+  // const products = await Product.find({isActive: true}).limit(1).select({name: 1,price: 1}); //sadece name ve fiyatı aktif olan 1 kaydı alır
+  res.send(products)
   });
   
-  router.post("/", (req, res) => {
-    // if(!req.body.name || req.body.name.length < 3){
-    //     res.status(400).send("ürün en az 3 karakter olmalı ")
-    //     return
-    //  }
+  router.post("/",  async (req, res) => {
+    if(!req.body.name || req.body.name.length < 3){
+        res.status(400).send("ürün en az 3 karakter olmalı ")
+        return
+     }
     const { error } = validateProduct(req.body);
     if (error) {
-      return res.status(400).send(result.error.details[0].message);
+     return res.status(400).send(error.details[0].message);
     }
-    const product = {
-      id: products.length + 1,
+    const product= new Product({
       name: req.body.name,
       price: req.body.price,
-    };
-    products.push(product);
-    res.send(product);
+      description:  req.body.description,
+      imageUrl: req.body.imageUrl,
+      isActive: req.body.isActive
+    })
+    try{
+      const result =  await product.save()
+      console.log(result);
+     }
+     catch(err){
+       console.log(err);
+     }
   });
   router.put("/:id", (req, res) => {
     //id e göre ürün alma
@@ -54,22 +63,15 @@ router.get("/", (req, res) => {
     res.send(product);
   });
   
-  router.get("/:id", (req, res) => {
-    // const id = req.params.id
-    // res.send(products[id -1])
-    const product = products.find((p) => p.id == req.params.id);
+  router.get("/:id", async (req, res) => {
+    const id = req.params.id
+    res.send(products[id -1])
+    const product = await Product.findOne({_id : req.params.id })
     if (!product) {
       return res.status(404).send("error ");
     }
     res.send(product);
   });
   
-  function validateProduct(product) {
-    const schema = new Joi.object({
-      name: Joi.string().min(3).max(30).required(),
-      price: Joi.number().required(),
-    });
-    return schema.validate(product);
-  }
 
   module.exports = router

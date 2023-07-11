@@ -3,6 +3,10 @@ const app = express();
 const homeRouter = require("./routes/home")
 const productRouter = require("./routes/products")
 const cors = require("cors")
+const mongoose =require("mongoose")
+const connectDb = require("./config");
+const Category = require("./models/category");
+const Product = require("./models/product");
 // http methods get, post put delete
 app.use(express.json());
 
@@ -19,8 +23,23 @@ app.use(cors({
     methods:["GET", "POST"]
 
 }))
+
+
 app.use(homeRouter)
 app.use("/api/product", productRouter)
+
+const databaseConnect = async () =>{
+  try{
+    await mongoose.connect(connectDb)
+    console.log("mongodb baglandı")
+  }
+  catch(err){
+    console.log(err)
+  }
+}
+databaseConnect()
+
+
 
 app.listen(3000, () => {
   console.log("listing on port 3000");
