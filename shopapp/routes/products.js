@@ -1,8 +1,11 @@
+require("express-async-errors")
+
 const express = require("express");
 const router = express.Router();
 const { Comment, Product, validateProduct } = require("../models/product");
 const auth = require("../middleware/auth");
 const isadmin = require("../middleware/isadmin");
+const { Error } = require("mongoose");
 //   query operatörleri
 //eq => equal
 //ne => not equal
@@ -12,7 +15,8 @@ const isadmin = require("../middleware/isadmin");
 // lte  => les than or equal
 // in  => [10,20,30] bunlara eşit olan
 // nin  => [10,20] hariç
-router.get("/", async (req, res) => {
+router.get("/", async (req, res,next) => {
+  throw new Error("hata oluştu")
   // const products = await Product.find(); //tümünü getir
   // const products = await Product.find({price:4000 , isActive : true}) // price 4000 isActive true olanı getirir
   // const products = await Product.find({isActive: true}).limit(1).select({name: 1,price: 1}); //sadece name ve fiyatı aktif olan 1 kaydı alır
@@ -32,9 +36,14 @@ router.get("/", async (req, res) => {
   // contains
   // const products = await Product.find({name: /.*iphone.*/i });
   // const products = await Product.find().populate("category", "name -_id").select("-isActive -_id");
-  const products = await Product.find().populate("categories", "name -_id");
+
+   const products = await Product.find().populate("categories", "name -_id");
+   res.send(products);
+  
+     //logging
+ 
   // categorye göre sorgulama yaptık populate methodunu kullandık sadece ismi aldık -id yaparak id bilgisini almadık
-  res.send(products);
+ 
 });
 
 router.post("/",auth ,isadmin, async (req, res) => {
