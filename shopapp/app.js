@@ -1,12 +1,14 @@
 const express = require("express");
 const app = express();
-const homeRouter = require("./routes/home");
-const productRouter = require("./routes/products");
+
 const cors = require("cors");
 const mongoose = require("mongoose");
 const connectDb = require("./config");
 const categoryRouter = require("./routes/categories");
 
+const userRouter = require("./routes/user")
+const homeRouter = require("./routes/home");
+const productRouter = require("./routes/products");
 // http methods get, post put delete
 app.use(express.json());
 
@@ -28,6 +30,7 @@ app.use(
 app.use(homeRouter);
 app.use("/api/product", productRouter);
 app.use("/api/category", categoryRouter);
+app.use("/api/user", userRouter);
 const databaseConnect = async () => {
   try {
     await mongoose.connect(connectDb);

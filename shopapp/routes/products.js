@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { Comment, Product, validateProduct } = require("../models/product");
-
+const auth = require("../middleware/auth");
+const isadmin = require("../middleware/isadmin");
 //   query operatörleri
 //eq => equal
 //ne => not equal
@@ -36,7 +37,9 @@ router.get("/", async (req, res) => {
   res.send(products);
 });
 
-router.post("/", async (req, res) => {
+router.post("/",auth ,isadmin, async (req, res) => {
+ 
+
   if (!req.body.name || req.body.name.length < 3) {
     res.status(400).send("ürün en az 3 karakter olmalı ");
     return;
@@ -57,13 +60,15 @@ router.post("/", async (req, res) => {
   try {
     const result = await product.save();
     console.log(result);
+    res.send(result)
   } catch (err) {
     console.log(err);
   }
+
 });
 
 
-router.put("/:id", async (req, res) => {
+router.put("/:id",auth ,isadmin, async (req, res) => {
   // // query first - findby id
   // // save
   // const product = await  Product.findById({_id : req.params.id })
@@ -109,7 +114,7 @@ router.put("/:id", async (req, res) => {
   });
   res.send(product);
 });
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",auth ,isadmin , async (req, res) => {
   // const product = await Product.deleteOne({_id: req.params.id})
   const product = await Product.findByIdAndDelete(req.params.id);
   if (!product) {
@@ -129,7 +134,7 @@ router.get("/:id", async (req, res) => {
   }
   res.send(product);
 });
-router.put("/comment/:id", async (req, res) => {
+router.put("/comment/:id",auth ,  async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (!product) {
     res.status(404).send("ürün yok");
@@ -143,7 +148,7 @@ router.put("/comment/:id", async (req, res) => {
   res.send(newComment);
 });
 
-router.delete("/comment/:id", async (req, res) => {
+router.delete("/comment/:id",auth ,  async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (!product) {
     return res.status(404).send("Aradığınız ürün bulunamadı.");
